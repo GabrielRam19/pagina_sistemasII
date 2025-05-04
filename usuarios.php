@@ -11,13 +11,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["nombre"])) {
     $nombre = $_POST["nombre"];
     $email = $_POST["email"];
     $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
-    $conn->query("INSERT INTO usuarios (nombre, email, password) VALUES ('$nombre', '$email', '$password')");
+
+    $stmt = $conn->prepare("INSERT INTO usuarios (nombre, email, password) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $nombre, $email, $password);
+    $stmt->execute();
 }
 
 // Eliminar usuario
 if (isset($_GET["delete"])) {
     $id = $_GET["delete"];
-    $conn->query("DELETE FROM usuarios WHERE id = $id");
+    $stmt = $conn->prepare("DELETE FROM usuarios WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
 }
 
 // Obtener usuarios
@@ -97,10 +102,10 @@ $usuarios = $conn->query("SELECT * FROM usuarios");
         <tr><th>ID</th><th>Nombre</th><th>Email</th><th>Acción</th></tr>
         <?php while ($u = $usuarios->fetch_assoc()): ?>
             <tr>
-                <td><?= $u["id"] ?></td>
-                <td><?= $u["nombre"] ?></td>
-                <td><?= $u["email"] ?></td>
-                <td><a href="?delete=<?= $u["id"] ?>" onclick="return confirm('¿Eliminar?')">Eliminar</a></td>
+                <td><?= htmlspecialchars($u["id"], ENT_QUOTES, 'UTF-8') ?></td>
+                <td><?= htmlspecialchars($u["nombre"], ENT_QUOTES, 'UTF-8') ?></td>
+                <td><?= htmlspecialchars($u["email"], ENT_QUOTES, 'UTF-8') ?></td>
+                <td><a href="?delete=<?= htmlspecialchars($u["id"], ENT_QUOTES, 'UTF-8') ?>" onclick="return confirm('¿Eliminar?')">Eliminar</a></td>
             </tr>
         <?php endwhile; ?>
     </table>

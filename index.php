@@ -42,7 +42,7 @@ if (!isset($_SESSION["user"])) {
 </head>
 <body>
     <header>
-        <h1>Bienvenido, <?php echo $_SESSION["user"]; ?>!</h1>
+        <h1>Bienvenido, <?= htmlspecialchars($_SESSION["user"], ENT_QUOTES, 'UTF-8'); ?>!</h1>
     </header>
     <div class="content">
         <p>Gracias por iniciar sesión. Puedes administrar los usuarios del sistema o cerrar sesión.</p>
